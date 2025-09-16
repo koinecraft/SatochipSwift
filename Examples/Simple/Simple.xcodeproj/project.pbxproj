@@ -11,6 +11,7 @@
 		1A2B3C4D5E6F78901234567A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567B /* SceneDelegate.swift */; };
 		1A2B3C4D5E6F78901234567C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567D /* ViewController.swift */; };
 		1A2B3C4D5E6F78901234567E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567F /* Assets.xcassets */; };
+		1A2B3C4D5E6F789012345690 /* PINManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345691 /* PINManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		1A2B3C4D5E6F78901234567F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1A2B3C4D5E6F789012345680 /* Simple.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Simple.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4D5E6F789012345681 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A2B3C4D5E6F789012345691 /* PINManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 				1A2B3C4D5E6F789012345679 /* AppDelegate.swift */,
 				1A2B3C4D5E6F78901234567B /* SceneDelegate.swift */,
 				1A2B3C4D5E6F78901234567D /* ViewController.swift */,
+				1A2B3C4D5E6F789012345691 /* PINManager.swift */,
 				1A2B3C4D5E6F78901234567F /* Assets.xcassets */,
 				1A2B3C4D5E6F789012345681 /* Info.plist */,
 			);
@@ -133,6 +136,7 @@
 				1A2B3C4D5E6F78901234567C /* ViewController.swift in Sources */,
 				1A2B3C4D5E6F789012345678 /* AppDelegate.swift in Sources */,
 				1A2B3C4D5E6F78901234567A /* SceneDelegate.swift in Sources */,
+				1A2B3C4D5E6F789012345690 /* PINManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
