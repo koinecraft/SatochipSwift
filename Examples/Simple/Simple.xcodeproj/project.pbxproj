@@ -12,6 +12,7 @@
 		1A2B3C4D5E6F78901234567C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567D /* ViewController.swift */; };
 		1A2B3C4D5E6F78901234567E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567F /* Assets.xcassets */; };
 		1A2B3C4D5E6F789012345690 /* PINManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345691 /* PINManager.swift */; };
+		1A2B3C4D5E6F789012345693 /* NFCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345694 /* NFCManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,8 @@
 		1A2B3C4D5E6F789012345680 /* Simple.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Simple.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4D5E6F789012345681 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A2B3C4D5E6F789012345691 /* PINManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINManager.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F789012345692 /* Simple.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Simple.entitlements; sourceTree = "<group>"; };
+		1A2B3C4D5E6F789012345694 /* NFCManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,8 +45,10 @@
 				1A2B3C4D5E6F78901234567B /* SceneDelegate.swift */,
 				1A2B3C4D5E6F78901234567D /* ViewController.swift */,
 				1A2B3C4D5E6F789012345691 /* PINManager.swift */,
+				1A2B3C4D5E6F789012345694 /* NFCManager.swift */,
 				1A2B3C4D5E6F78901234567F /* Assets.xcassets */,
 				1A2B3C4D5E6F789012345681 /* Info.plist */,
+				1A2B3C4D5E6F789012345692 /* Simple.entitlements */,
 			);
 			path = Simple;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 				1A2B3C4D5E6F789012345678 /* AppDelegate.swift in Sources */,
 				1A2B3C4D5E6F78901234567A /* SceneDelegate.swift in Sources */,
 				1A2B3C4D5E6F789012345690 /* PINManager.swift in Sources */,
+				1A2B3C4D5E6F789012345693 /* NFCManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,13 +273,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Simple/Simple.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDF9P54VLB;
+				DEVELOPMENT_TEAM = Z549D9UUA8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Simple/Info.plist;
-				INFOPLIST_KEY_NFCReaderUsageDescription = "This app uses NFC to communicate with Satochip cards for secure operations.";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "NFC tag access is required to communicate with Satochip, Satodime, and Seedkeeper cards.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -282,11 +291,15 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.satochip.Simple;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.SimpleSato;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -295,13 +308,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Simple/Simple.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YDF9P54VLB;
+				DEVELOPMENT_TEAM = Z549D9UUA8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Simple/Info.plist;
-				INFOPLIST_KEY_NFCReaderUsageDescription = "This app uses NFC to communicate with Satochip cards for secure operations.";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "NFC tag access is required to communicate with Satochip, Satodime, and Seedkeeper cards.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -310,11 +326,15 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.satochip.Simple;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.SimpleSato;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

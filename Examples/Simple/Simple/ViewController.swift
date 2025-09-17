@@ -173,16 +173,25 @@ class ViewController: UIViewController, UITextViewDelegate {
         PINManager.shared.resetPINTimer()
         updatePINStatus()
         
-        // Placeholder for signing logic
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
-        processedMessageTextView.textColor = .black
-        processedMessageTextView.text = "[\(timestamp)] Message: \"\(message)\" signed successfully (placeholder).\n" + processedMessageTextView.text
+        // Check NFC availability
+        guard NFCManager.shared.isNFCAvailable else {
+            NFCManager.shared.showNFCNotAvailableAlert(from: self)
+            return
+        }
         
-        // Show PIN status
-        if let timeRemaining = PINManager.shared.formattedTimeRemaining {
-            showMessage("Signed successfully. PIN expires in \(timeRemaining)")
-        } else {
-            showMessage("Signed successfully")
+        // Start NFC session to detect Satochip card
+        showMessage("Starting NFC session... Hold your Satochip card near the device")
+        
+        NFCManager.shared.startNFCSession { [weak self] success, message in
+            DispatchQueue.main.async {
+                if success {
+                    self?.showMessage("NFC tag detected! Ready for Satochip communication.")
+                    // TODO: Implement Satochip card identification and communication
+                    self?.showMessage("Satochip integration coming in next steps...")
+                } else {
+                    self?.showMessage("NFC Error: \(message ?? "Unknown error")")
+                }
+            }
         }
         
         messageInputTextView.resignFirstResponder() // Dismiss keyboard
