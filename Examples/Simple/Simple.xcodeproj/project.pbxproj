@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		1A2B3C4D5E6F78901234567E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F78901234567F /* Assets.xcassets */; };
 		1A2B3C4D5E6F789012345690 /* PINManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345691 /* PINManager.swift */; };
 		1A2B3C4D5E6F789012345693 /* NFCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345694 /* NFCManager.swift */; };
+		9D6694282E7B4E80003C31A0 /* SatochipSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9D6694272E7B4E80003C31A0 /* SatochipSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D6694282E7B4E80003C31A0 /* SatochipSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +115,9 @@
 				Base,
 			);
 			mainGroup = 1A2B3C4D5E6F789012345685;
+			packageReferences = (
+				9D6694262E7B4E80003C31A0 /* XCLocalSwiftPackageReference "../../../SatochipSwift" */,
+			);
 			productRefGroup = 1A2B3C4D5E6F789012345684 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -360,6 +365,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		9D6694262E7B4E80003C31A0 /* XCLocalSwiftPackageReference "../../../SatochipSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../SatochipSwift;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D6694272E7B4E80003C31A0 /* SatochipSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SatochipSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A2B3C4D5E6F78901234568A /* Project object */;
 }

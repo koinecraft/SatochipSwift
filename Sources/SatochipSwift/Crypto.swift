@@ -193,24 +193,29 @@ class Crypto {
     }
 
     func secp256k1GeneratePair() -> ([UInt8], [UInt8]) {
-        // Generate a new private key using P256K
-        let privateKey = P256K.Signing.PrivateKey()
-        let publicKey = privateKey.publicKey
-        
-        // Convert to byte arrays
-        let privateKeyBytes = privateKey.rawRepresentation
-        let publicKeyBytes = publicKey.rawRepresentation
-        
-        return (Array(privateKeyBytes), Array(publicKeyBytes))
+        do {
+            // Generate a new private key using P256K
+            let privateKey = try P256K.Signing.PrivateKey()
+            let publicKey = privateKey.publicKey
+            
+            // Convert to byte arrays
+            let privateKeyBytes = privateKey.dataRepresentation
+            let publicKeyBytes = publicKey.dataRepresentation
+            
+            return (Array(privateKeyBytes), Array(publicKeyBytes))
+        } catch {
+            // Return zeros if key generation fails
+            return ([UInt8](repeating: 0, count: 32), [UInt8](repeating: 0, count: 33))
+        }
     }
 
     func secp256k1ECDH(privKey: [UInt8], pubKey pubKeyBytes: [UInt8]) -> [UInt8] {
         do {
-            // Create private key from bytes
-            let privateKey = try P256K.Signing.PrivateKey(rawRepresentation: Data(privKey))
+            // Create private key for key agreement from bytes
+            let privateKey = try P256K.KeyAgreement.PrivateKey(dataRepresentation: Data(privKey))
             
-            // Create public key from bytes
-            let publicKey = try P256K.Signing.PublicKey(rawRepresentation: Data(pubKeyBytes))
+            // Create public key for key agreement from bytes
+            let publicKey = try P256K.KeyAgreement.PublicKey(dataRepresentation: Data(pubKeyBytes), format: .uncompressed)
             
             // Perform ECDH
             let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: publicKey)
@@ -228,9 +233,9 @@ class Crypto {
 
     func secp256k1PublicFromPrivate(_ privKey: [UInt8]) -> [UInt8] {
         do {
-            let privateKey = try P256K.Signing.PrivateKey(rawRepresentation: Data(privKey))
+            let privateKey = try P256K.Signing.PrivateKey(dataRepresentation: Data(privKey))
             let publicKey = privateKey.publicKey
-            return Array(publicKey.rawRepresentation)
+            return Array(publicKey.dataRepresentation)
         } catch {
             // Return zeros if key creation fails
             return [UInt8](repeating: 0, count: 33)
@@ -244,7 +249,7 @@ class Crypto {
         do {
             // Create signature from r, s, and recovery ID
             let signatureData = Data(r + s)
-            let signature = try P256K.Signing.ECDSASignature(rawRepresentation: signatureData)
+            let signature = try P256K.Signing.ECDSASignature(dataRepresentation: signatureData)
             
             // This is a placeholder - actual recovery would need more complex logic
             // For now, return zeros to indicate unsupported operation
@@ -256,9 +261,9 @@ class Crypto {
 
     func secp256k1Sign(hash: [UInt8], privKey: [UInt8]) -> [UInt8] {
         do {
-            let privateKey = try P256K.Signing.PrivateKey(rawRepresentation: Data(privKey))
+            let privateKey = try P256K.Signing.PrivateKey(dataRepresentation: Data(privKey))
             let signature = try privateKey.signature(for: Data(hash))
-            return Array(signature.rawRepresentation)
+            return Array(signature.dataRepresentation)
         } catch {
             // Return empty array if signing fails
             return []
@@ -307,8 +312,8 @@ class Crypto {
     
     func secp256k1Verify(sigBytes: [UInt8], msgHash: [UInt8], pubkeyBytes: [UInt8]) -> Int32 {
         do {
-            let publicKey = try P256K.Signing.PublicKey(rawRepresentation: Data(pubkeyBytes))
-            let signature = try P256K.Signing.ECDSASignature(rawRepresentation: Data(sigBytes))
+            let publicKey = try P256K.Signing.PublicKey(dataRepresentation: Data(pubkeyBytes), format: .uncompressed)
+            let signature = try P256K.Signing.ECDSASignature(dataRepresentation: Data(sigBytes))
             let isValid = publicKey.isValidSignature(signature, for: Data(msgHash))
             return isValid ? 1 : 0
         } catch {
