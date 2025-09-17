@@ -36,7 +36,7 @@ let package = Package(
                 "SwiftTLS",
                 "MnemonicSwift",
                 "BigInt",
-                .product(name: "secp256k1", package: "swift-secp256k1"),
+                .product(name: "P256K", package: "swift-secp256k1"),
             ]),
         .testTarget(
             name: "SatochipSwiftTests",
