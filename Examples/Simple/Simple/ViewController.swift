@@ -1,4 +1,5 @@
 import UIKit
+import SatochipSwift
 
 class ViewController: UIViewController, UITextViewDelegate {
 
@@ -173,28 +174,58 @@ class ViewController: UIViewController, UITextViewDelegate {
         PINManager.shared.resetPINTimer()
         updatePINStatus()
         
-        // Check NFC availability
-        guard NFCManager.shared.isNFCAvailable else {
-            NFCManager.shared.showNFCNotAvailableAlert(from: self)
+        // Check NFC availability using SatochipSwift
+        guard SatocardController.isAvailable else {
+            showMessage("NFC is not available on this device.")
             return
         }
         
-        // Start NFC session to detect Satochip card
+        // Start NFC session to detect Satochip card using SatochipSwift
         showMessage("Starting NFC session... Hold your Satochip card near the device")
         
-        NFCManager.shared.startNFCSession { [weak self] success, message in
-            DispatchQueue.main.async {
-                if success {
-                    self?.showMessage("NFC tag detected! Ready for Satochip communication.")
-                    // TODO: Implement Satochip card identification and communication
-                    self?.showMessage("Satochip integration coming in next steps...")
-                } else {
-                    self?.showMessage("NFC Error: \(message ?? "Unknown error")")
+        let alertMessages = SatocardController.defaultAlertMessages
+        guard let controller = SatocardController(
+            alertMessages: alertMessages,
+            onConnect: { [weak self] cardChannel in
+                DispatchQueue.main.async {
+                    self?.showMessage("Satochip card connected! Starting communication...")
+                    self?.handleSatochipConnection(cardChannel: cardChannel, message: message, pin: pin)
+                }
+            },
+            onFailure: { [weak self] error in
+                DispatchQueue.main.async {
+                    self?.showMessage("NFC Error: \(error.localizedDescription)")
                 }
             }
+        ) else {
+            showMessage("Failed to initialize NFC session. Please try again.")
+            return
         }
         
+        controller.start(alertMessage: "Hold your Satochip card near the device to begin signing")
         messageInputTextView.resignFirstResponder() // Dismiss keyboard
+    }
+    
+    private func handleSatochipConnection(cardChannel: CardChannel, message: String, pin: String) {
+        // Create SatochipCommandSet for communication
+        let commandSet = SatocardCommandSet(cardChannel: cardChannel)
+        
+        // Initialize secure channel
+        showMessage("Initializing secure channel...")
+        
+        // For now, we'll implement a basic flow
+        // In the next steps, we'll add:
+        // 1. Card identification
+        // 2. Secure channel establishment
+        // 3. PIN verification
+        // 4. Message hashing and signing
+        
+        showMessage("Satochip card connected successfully!")
+        showMessage("Ready for secure operations with PIN: \(pin)")
+        showMessage("Message to sign: \(message)")
+        
+        // TODO: Implement the full Satochip communication flow
+        showMessage("Full Satochip integration will be implemented in the next steps...")
     }
     
     private func showMessage(_ message: String) {
