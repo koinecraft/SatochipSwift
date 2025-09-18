@@ -6,7 +6,7 @@ open class SatocardController: NSObject {
 
     /// Whether the device supports the Satochip reading
     public static var isAvailable: Bool {
-        return NFCNDEFReaderSession.readingAvailable
+        return NFCTagReaderSession.readingAvailable
     }
 
     private var session: NFCTagReaderSession!
@@ -59,8 +59,11 @@ open class SatocardController: NSObject {
     ///
     /// - Parameter alertMessage: message about usage of the NFC card
     public func start(alertMessage: String? = nil) {
+        print("🔍 CONSOLE DEBUG: SatocardController.start called with alertMessage: \(alertMessage ?? "nil")")
         setAlert(alertMessage)
+        print("🔍 CONSOLE DEBUG: Starting NFCTagReaderSession...")
         session.begin()
+        print("🔍 CONSOLE DEBUG: NFCTagReaderSession.begin() called")
     }
 
     /// Stops the session with error icon and message displayed.
@@ -94,31 +97,47 @@ open class SatocardController: NSObject {
 extension SatocardController: NFCTagReaderSessionDelegate {
 
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
-        // no-op
+        print("🔍 CONSOLE DEBUG: tagReaderSessionDidBecomeActive called")
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
+        print("🔍 CONSOLE DEBUG: tagReaderSession didInvalidateWithError: \(error.localizedDescription)")
+        print("🔍 CONSOLE DEBUG: Error domain: \(error._domain)")
+        print("🔍 CONSOLE DEBUG: Error code: \(error._code)")
+        if let nfcError = error as? NFCReaderError {
+            print("🔍 CONSOLE DEBUG: NFCReaderError case: \(nfcError)")
+        }
         DispatchQueue.global().async { [unowned self] in
             self.onFailure(error)
         }
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
+        print("🔍 CONSOLE DEBUG: tagReaderSession didDetect tags: \(tags.count) tags detected")
+        for (index, tag) in tags.enumerated() {
+            print("🔍 CONSOLE DEBUG: Tag \(index): \(tag)")
+        }
+        
         if tags.count > 1 {
+            print("🔍 CONSOLE DEBUG: More than one tag detected, restarting polling")
             setAlert(alertMessages.moreThanOneTagFound)
             tagRemovalDetect(tags[0])
             return
         }
         guard let first = tags.first, case NFCTag.iso7816(let tag) = first else {
+            print("🔍 CONSOLE DEBUG: No ISO7816 tag found or unsupported tag type")
             stop(errorMessage: alertMessages.unsupportedTagType)
             return
         }
+        print("🔍 CONSOLE DEBUG: ISO7816 tag detected, attempting to connect")
         session.connect(to: first) { [weak self] error in
             guard let `self` = self else { return }
             if error != nil {
+                print("🔍 CONSOLE DEBUG: Tag connection failed: \(error?.localizedDescription ?? "Unknown error")")
                 self.stop(errorMessage: self.alertMessages.tagConnectionError)
                 return
             }
+            print("🔍 CONSOLE DEBUG: Tag connected successfully, calling onConnect")
             DispatchQueue.global().async {
                 self.onConnect(CoreNFCCardChannel(tag: tag))
             }
