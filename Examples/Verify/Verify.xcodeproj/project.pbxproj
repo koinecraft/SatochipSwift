@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,6 +11,7 @@
 		1A2B3C4D5E6F789012345693 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345694 /* SceneDelegate.swift */; };
 		1A2B3C4D5E6F789012345695 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345696 /* ViewController.swift */; };
 		1A2B3C4D5E6F789012345699 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F789012345700 /* Assets.xcassets */; };
+		9D74C04E2E873FA100195E73 /* SatochipSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9D74C04D2E873FA100195E73 /* SatochipSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D74C04E2E873FA100195E73 /* SatochipSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +109,9 @@
 				Base,
 			);
 			mainGroup = 1A2B3C4D5E6F789012345681;
+			packageReferences = (
+				9D74C04C2E873FA100195E73 /* XCLocalSwiftPackageReference "../../../SatochipSwift" */,
+			);
 			productRefGroup = 1A2B3C4D5E6F789012345706 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -282,7 +287,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.Verify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.VerifyPIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -312,7 +317,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.Verify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gammastream.VerifyPIN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -342,6 +347,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		9D74C04C2E873FA100195E73 /* XCLocalSwiftPackageReference "../../../SatochipSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../SatochipSwift;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D74C04D2E873FA100195E73 /* SatochipSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SatochipSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A2B3C4D5E6F789012345682 /* Project object */;
 }
