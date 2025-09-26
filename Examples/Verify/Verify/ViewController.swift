@@ -59,11 +59,18 @@ class ViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func verifyButtonTapped() {
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        let message = "\(timestamp) - Verified\n"
+        logMessage("Verified")
+    }
+    
+    // MARK: - Logging
+    private func logMessage(_ message: String) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        let timestamp = formatter.string(from: Date())
+        let logEntry = "\(timestamp) - \(message)\n"
         
         // Append the message to the text view
-        textView.text += message
+        textView.text += logEntry
         
         // Scroll to the bottom to show the most recent message
         let bottom = NSMakeRange(textView.text.count - 1, 1)
