@@ -1,4 +1,6 @@
 import UIKit
+import SatochipSwift
+import CoreNFC
 
 class ViewController: UIViewController {
     
@@ -28,10 +30,15 @@ class ViewController: UIViewController {
         return button
     }()
     
+    // MARK: - NFC Properties
+    private var satocardController: SatocardController?
+    private var commandSet: SatocardCommandSet?
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupNFC()
     }
     
     // MARK: - UI Setup
@@ -59,7 +66,8 @@ class ViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func verifyButtonTapped() {
-        logMessage("Verified")
+        logMessage("Starting verification process...")
+        startNFCSession()
     }
     
     // MARK: - Logging
@@ -75,5 +83,68 @@ class ViewController: UIViewController {
         // Scroll to the bottom to show the most recent message
         let bottom = NSMakeRange(textView.text.count - 1, 1)
         textView.scrollRangeToVisible(bottom)
+    }
+    
+    // MARK: - NFC Setup
+    private func setupNFC() {
+        guard SatocardController.isAvailable else {
+            logMessage("NFC not available on this device")
+            return
+        }
+        
+        satocardController = SatocardController(
+            alertMessages: SatocardController.defaultAlertMessages,
+            onConnect: { [weak self] cardChannel in
+                self?.handleCardConnection(cardChannel)
+            },
+            onFailure: { [weak self] error in
+                self?.handleCardError(error)
+            }
+        )
+        
+        logMessage("NFC setup complete")
+    }
+    
+    private func handleCardConnection(_ cardChannel: CardChannel) {
+        DispatchQueue.main.async {
+            self.commandSet = SatocardCommandSet(cardChannel: cardChannel)
+            self.logMessage("Card connected successfully")
+            self.detectCardType()
+        }
+    }
+    
+    private func handleCardError(_ error: Error) {
+        DispatchQueue.main.async {
+            self.logMessage("Card error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func detectCardType() {
+        guard let commandSet = commandSet else { return }
+        
+        do {
+            let (_, cardType) = try commandSet.selectApplet(cardType: .anycard)
+            logMessage("Detected card type: \(cardType)")
+            
+            switch cardType {
+            case .satochip:
+                logMessage("Satochip card detected")
+            case .satodime:
+                logMessage("Satodime card detected")
+            case .seedkeeper:
+                logMessage("Seedkeeper card detected")
+            case .unknown:
+                logMessage("Unknown card type detected")
+            @unknown default:
+                logMessage("Unknown card type detected (default case)")
+            }
+        } catch {
+            logMessage("Error detecting card type: \(error.localizedDescription)")
+        }
+    }
+    
+    private func startNFCSession() {
+        satocardController?.start(alertMessage: "Hold your Satochip card near the device")
+        logMessage("NFC session started")
     }
 }
