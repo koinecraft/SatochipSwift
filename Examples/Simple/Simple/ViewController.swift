@@ -1,8 +1,12 @@
 import UIKit
 import SatochipSwift
+import os.log
 import CoreNFC
 
 class ViewController: UIViewController, UITextViewDelegate {
+
+    // MARK: - Logging
+    static let log = OSLog(subsystem: "com.gammastream.SimpleSato", category: "ViewController")
 
     // MARK: - UI Elements
     let messageInputTextView: UITextView = {
@@ -67,15 +71,20 @@ class ViewController: UIViewController, UITextViewDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        os_log("🔍 ViewController: viewDidLoad called", log: ViewController.log, type: .info)
+        os_log("🔍 CONSOLE DEBUG: ViewController is loading", log: ViewController.log, type: .info)
         setupUI()
         messageInputTextView.delegate = self
         setupKeyboardDismissal()
         updatePINStatus()
         startPINStatusTimer()
+        os_log("🔍 ViewController: viewDidLoad setup complete", log: ViewController.log, type: .info)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        os_log("🔍 ViewController: viewWillAppear called", log: ViewController.log, type: .info)
+        os_log("🔍 CONSOLE DEBUG: ViewController will appear", log: ViewController.log, type: .info)
         updatePINStatus()
     }
 
@@ -145,53 +154,70 @@ class ViewController: UIViewController, UITextViewDelegate {
     @objc func signButtonTapped() {
         showMessage("🔍 DEBUG: signButtonTapped called")
         print("🔍 CONSOLE DEBUG: signButtonTapped called")
+        print("🔍 ViewController: ===== SIGN BUTTON TAPPED =====")
+        os_log("🔍 CONSOLE DEBUG: signButtonTapped called", log: ViewController.log, type: .info)
+        os_log("🔍 ViewController: ===== SIGN BUTTON TAPPED =====", log: ViewController.log, type: .info)
         
         let message = messageInputTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         showMessage("🔍 DEBUG: Message text: '\(message)'")
-        print("🔍 CONSOLE DEBUG: Message text: '\(message)'")
+        os_log("🔍 CONSOLE DEBUG: Message text: '%{public}@'", log: ViewController.log, type: .info, message)
+        os_log("🔍 ViewController: Message to sign: '%{public}@'", log: ViewController.log, type: .info, message)
+        os_log("🔍 CONSOLE DEBUG: ===== SIGN BUTTON PRESSED =====", log: ViewController.log, type: .info)
+        os_log("🔍 CONSOLE DEBUG: Message to be signed: '%{public}@'", log: ViewController.log, type: .info, message)
+        os_log("🔍 CONSOLE DEBUG: Message length: %d characters", log: ViewController.log, type: .info, message.count)
         
         if message == "Enter your message here..." || message.isEmpty {
             showMessage("🔍 DEBUG: Message is empty or placeholder, showing alert")
-            print("🔍 CONSOLE DEBUG: Message is empty or placeholder, showing alert")
+            os_log("🔍 CONSOLE DEBUG: Message is empty or placeholder, showing alert", log: ViewController.log, type: .info)
+            os_log("🔍 ViewController: ❌ Message validation failed - empty or placeholder text", log: ViewController.log, type: .info)
             let alert = UIAlertController(title: "Input Required", message: "Please enter a message to sign.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
+        
+        os_log("🔍 ViewController: ✅ Message validation passed", log: ViewController.log, type: .info)
 
         showMessage("🔍 DEBUG: Checking PIN status...")
         showMessage("🔍 DEBUG: hasValidPIN: \(PINManager.shared.hasValidPIN)")
-        print("🔍 CONSOLE DEBUG: Checking PIN status...")
-        print("🔍 CONSOLE DEBUG: hasValidPIN: \(PINManager.shared.hasValidPIN)")
+        os_log("🔍 CONSOLE DEBUG: Checking PIN status...", log: ViewController.log, type: .info)
+        os_log("🔍 CONSOLE DEBUG: hasValidPIN: %{public}@", log: ViewController.log, type: .info, String(PINManager.shared.hasValidPIN))
+        os_log("🔍 ViewController: Checking PIN status - hasValidPIN: %{public}@", log: ViewController.log, type: .info, String(PINManager.shared.hasValidPIN))
         
         // Check if we have a valid PIN, if not prompt for one
         if !PINManager.shared.hasValidPIN {
             showMessage("🔍 DEBUG: No valid PIN, prompting user...")
-            print("🔍 CONSOLE DEBUG: No valid PIN, prompting user...")
+            os_log("🔍 CONSOLE DEBUG: No valid PIN, prompting user...", log: ViewController.log, type: .info)
+            os_log("🔍 ViewController: No valid PIN found, prompting user for PIN", log: ViewController.log, type: .info)
             PINManager.shared.promptForPIN(from: self) { [weak self] pin in
                 if let pin = pin {
                     self?.showMessage("🔍 DEBUG: PIN entered successfully: '\(pin)'")
-                    print("🔍 CONSOLE DEBUG: PIN entered successfully: '\(pin)'")
+                    os_log("🔍 CONSOLE DEBUG: PIN entered successfully: '%{public}@'", log: ViewController.log, type: .info, pin)
+                    os_log("🔍 ViewController: ✅ PIN entered successfully, proceeding with signing", log: ViewController.log, type: .info)
                     // PIN entered successfully, proceed with signing
                     self?.performSigning(message: message, pin: pin)
                 } else {
                     self?.showMessage("🔍 DEBUG: User cancelled PIN entry")
-                    print("🔍 CONSOLE DEBUG: User cancelled PIN entry")
+                    os_log("🔍 CONSOLE DEBUG: User cancelled PIN entry", log: ViewController.log, type: .info)
+                    os_log("🔍 ViewController: ❌ User cancelled PIN entry", log: ViewController.log, type: .info)
                     // User cancelled PIN entry
                     self?.showMessage("Signing cancelled - PIN required")
                 }
             }
         } else {
             showMessage("🔍 DEBUG: Valid PIN exists, proceeding with signing")
-            print("🔍 CONSOLE DEBUG: Valid PIN exists, proceeding with signing")
+            os_log("🔍 CONSOLE DEBUG: Valid PIN exists, proceeding with signing", log: ViewController.log, type: .info)
+            os_log("🔍 ViewController: ✅ Valid PIN exists, proceeding with signing", log: ViewController.log, type: .info)
             // We have a valid PIN, proceed with signing
             if let pin = PINManager.shared.currentValidPIN {
                 showMessage("🔍 DEBUG: Using existing PIN: '\(pin)'")
-                print("🔍 CONSOLE DEBUG: Using existing PIN: '\(pin)'")
+                os_log("🔍 CONSOLE DEBUG: Using existing PIN: '%{public}@'", log: ViewController.log, type: .info, pin)
+                os_log("🔍 ViewController: Using existing PIN for signing", log: ViewController.log, type: .info)
                 performSigning(message: message, pin: pin)
             } else {
                 showMessage("❌ DEBUG: hasValidPIN is true but currentValidPIN is nil")
-                print("❌ CONSOLE DEBUG: hasValidPIN is true but currentValidPIN is nil")
+                os_log("❌ CONSOLE DEBUG: hasValidPIN is true but currentValidPIN is nil", log: ViewController.log, type: .error)
+                os_log("🔍 ViewController: ❌ ERROR: hasValidPIN is true but currentValidPIN is nil", log: ViewController.log, type: .error)
             }
         }
     }
@@ -200,20 +226,27 @@ class ViewController: UIViewController, UITextViewDelegate {
         showMessage("🔍 DEBUG: Starting performSigning function")
         showMessage("🔍 DEBUG: Message: '\(message)'")
         showMessage("🔍 DEBUG: PIN: '\(pin)'")
+        os_log("🔍 ViewController: ===== PERFORMING SIGNING =====", log: ViewController.log, type: .info)
+        os_log("🔍 ViewController: Message: '%{public}@'", log: ViewController.log, type: .info, message)
+        os_log("🔍 ViewController: PIN: '%{public}@'", log: ViewController.log, type: .info, pin)
         
         // Reset PIN timer since we're using it
         PINManager.shared.resetPINTimer()
         updatePINStatus()
         showMessage("🔍 DEBUG: PIN timer reset and status updated")
+        os_log("🔍 ViewController: PIN timer reset and status updated", log: ViewController.log, type: .info)
         
         // Check NFC availability using SatochipSwift
         showMessage("🔍 DEBUG: Checking SatocardController.isAvailable...")
         showMessage("🔍 DEBUG: NFCTagReaderSession.readingAvailable: \(NFCTagReaderSession.readingAvailable)")
+        os_log("🔍 ViewController: Checking NFC availability...", log: ViewController.log, type: .info)
+        os_log("🔍 ViewController: NFCTagReaderSession.readingAvailable: %{public}@", log: ViewController.log, type: .info, String(NFCTagReaderSession.readingAvailable))
         
         // Additional console-only debug info
-        print("🔍 CONSOLE DEBUG: Device info - iOS version: \(UIDevice.current.systemVersion)")
-        print("🔍 CONSOLE DEBUG: Device model: \(UIDevice.current.model)")
-        print("🔍 CONSOLE DEBUG: Device name: \(UIDevice.current.name)")
+        os_log("🔍 CONSOLE DEBUG: Device info - iOS version: %{public}@", log: ViewController.log, type: .info, UIDevice.current.systemVersion)
+        os_log("🔍 CONSOLE DEBUG: Device model: %{public}@", log: ViewController.log, type: .info, UIDevice.current.model)
+        os_log("🔍 CONSOLE DEBUG: Device name: %{public}@", log: ViewController.log, type: .info, UIDevice.current.name)
+        os_log("🔍 ViewController: Device info - iOS: %{public}@, Model: %{public}@", log: ViewController.log, type: .info, UIDevice.current.systemVersion, UIDevice.current.model)
         
         guard SatocardController.isAvailable else {
             showMessage("❌ DEBUG: SatocardController.isAvailable returned false")
@@ -221,20 +254,25 @@ class ViewController: UIViewController, UITextViewDelegate {
             showMessage("NFC is not available on this device.")
             
             // Console-only additional info
-            print("❌ CONSOLE DEBUG: NFC not available - check device capabilities and entitlements")
-            print("❌ CONSOLE DEBUG: Make sure device supports NFC and app has proper entitlements")
+            os_log("❌ CONSOLE DEBUG: NFC not available - check device capabilities and entitlements", log: ViewController.log, type: .error)
+            os_log("❌ CONSOLE DEBUG: Make sure device supports NFC and app has proper entitlements", log: ViewController.log, type: .error)
+            os_log("🔍 ViewController: ❌ NFC not available - SatocardController.isAvailable returned false", log: ViewController.log, type: .error)
             return
         }
         showMessage("✅ DEBUG: SatocardController.isAvailable returned true")
-        print("✅ CONSOLE DEBUG: NFC is available on this device")
+        os_log("✅ CONSOLE DEBUG: NFC is available on this device", log: ViewController.log, type: .info)
+        os_log("🔍 ViewController: ✅ NFC is available - SatocardController.isAvailable returned true", log: ViewController.log, type: .info)
         
         // Start NFC session to detect Satochip card using SatochipSwift
         showMessage("🔍 DEBUG: Creating SatocardController...")
         showMessage("Starting NFC session... Hold your Satochip card near the device")
+        os_log("🔍 ViewController: Creating SatocardController...", log: ViewController.log, type: .info)
+        os_log("🔍 ViewController: Starting NFC session to detect Satochip card", log: ViewController.log, type: .info)
         
         let alertMessages = SatocardController.defaultAlertMessages
         showMessage("🔍 DEBUG: Using default alert messages: \(alertMessages)")
         print("🔍 CONSOLE DEBUG: Alert messages: \(alertMessages)")
+        print("🔍 ViewController: Using default alert messages: \(alertMessages)")
         
         guard let controller = SatocardController(
             alertMessages: alertMessages,
@@ -248,6 +286,9 @@ class ViewController: UIViewController, UITextViewDelegate {
                     print("🔍 CONSOLE DEBUG: onConnect callback triggered")
                     print("🔍 CONSOLE DEBUG: CardChannel type: \(type(of: cardChannel))")
                     print("🔍 CONSOLE DEBUG: CardChannel description: \(cardChannel)")
+                    print("🔍 ViewController: ===== CARD CONNECTED =====")
+                    print("🔍 ViewController: CardChannel type: \(type(of: cardChannel))")
+                    print("🔍 ViewController: CardChannel description: \(cardChannel)")
                     
                     self?.handleSatochipConnection(cardChannel: cardChannel, message: message, pin: pin)
                 }
@@ -266,6 +307,11 @@ class ViewController: UIViewController, UITextViewDelegate {
                     print("🔍 CONSOLE DEBUG: Error domain: \(error._domain)")
                     print("🔍 CONSOLE DEBUG: Error code: \(error._code)")
                     print("🔍 CONSOLE DEBUG: Error description: \(error.localizedDescription)")
+                    print("🔍 ViewController: ===== NFC FAILURE =====")
+                    print("🔍 ViewController: Error type: \(type(of: error))")
+                    print("🔍 ViewController: Error domain: \(error._domain)")
+                    print("🔍 ViewController: Error code: \(error._code)")
+                    print("🔍 ViewController: Error description: \(error.localizedDescription)")
                     // Note: userInfo not available on generic Error type
                 }
             }
@@ -274,6 +320,7 @@ class ViewController: UIViewController, UITextViewDelegate {
             showMessage("Failed to initialize NFC session. Please try again.")
             print("❌ CONSOLE DEBUG: SatocardController initialization failed")
             print("❌ CONSOLE DEBUG: This could be due to NFC not being available or session creation issues")
+            print("🔍 ViewController: ❌ SatocardController initialization failed")
             return
         }
         
@@ -281,27 +328,33 @@ class ViewController: UIViewController, UITextViewDelegate {
         showMessage("🔍 DEBUG: Starting NFC session...")
         print("✅ CONSOLE DEBUG: SatocardController created successfully")
         print("🔍 CONSOLE DEBUG: Starting NFC session with alert message")
+        print("🔍 ViewController: ✅ SatocardController created successfully")
+        print("🔍 ViewController: Starting NFC session...")
         
-                controller.start(alertMessage: "Hold your Satochip card near the device to begin signing")
-                messageInputTextView.resignFirstResponder() // Dismiss keyboard
-                
-                showMessage("🔍 DEBUG: NFC session started, waiting for card detection...")
-                print("🔍 CONSOLE DEBUG: NFC session started, waiting for card detection...")
-                print("🔍 CONSOLE DEBUG: User should now hold Satochip card near the device")
-                
-                // Add a small delay to check if session becomes active
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    self.showMessage("🔍 DEBUG: Checking session status after 2 seconds...")
-                    print("🔍 CONSOLE DEBUG: Checking session status after 2 seconds...")
-                    // If we haven't seen any callbacks by now, there might be an issue
-                }
-                
-                // Add a timeout after 10 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
-                    self.showMessage("⏰ DEBUG: NFC session timeout - no activity detected")
-                    print("⏰ CONSOLE DEBUG: NFC session timeout - no activity detected")
-                    print("⏰ CONSOLE DEBUG: This might indicate NFC is disabled or app lacks permissions")
-                }
+        controller.start(alertMessage: "Hold your Satochip card near the device to begin signing")
+        messageInputTextView.resignFirstResponder() // Dismiss keyboard
+        
+        showMessage("🔍 DEBUG: NFC session started, waiting for card detection...")
+        print("🔍 CONSOLE DEBUG: NFC session started, waiting for card detection...")
+        print("🔍 CONSOLE DEBUG: User should now hold Satochip card near the device")
+        print("🔍 ViewController: ✅ NFC session started, waiting for card detection...")
+        print("🔍 ViewController: User should now hold Satochip card near the device")
+        
+        // Add a small delay to check if session becomes active
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.showMessage("🔍 DEBUG: Checking session status after 2 seconds...")
+            print("🔍 CONSOLE DEBUG: Checking session status after 2 seconds...")
+            print("🔍 ViewController: Checking session status after 2 seconds...")
+            // If we haven't seen any callbacks by now, there might be an issue
+        }
+        
+        // Add a timeout after 10 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
+            self.showMessage("⏰ DEBUG: NFC session timeout - no activity detected")
+            print("⏰ CONSOLE DEBUG: NFC session timeout - no activity detected")
+            print("⏰ CONSOLE DEBUG: This might indicate NFC is disabled or app lacks permissions")
+            print("🔍 ViewController: ⏰ NFC session timeout - no activity detected")
+        }
     }
     
     private func handleSatochipConnection(cardChannel: CardChannel, message: String, pin: String) {
@@ -310,6 +363,9 @@ class ViewController: UIViewController, UITextViewDelegate {
         print("🔍 CONSOLE DEBUG: handleSatochipConnection called")
         print("🔍 CONSOLE DEBUG: CardChannel type: \(type(of: cardChannel))")
         print("🔍 CONSOLE DEBUG: CardChannel description: \(cardChannel)")
+        print("🔍 ViewController: ===== HANDLING SATOCHIP CONNECTION =====")
+        print("🔍 ViewController: CardChannel type: \(type(of: cardChannel))")
+        print("🔍 ViewController: CardChannel description: \(cardChannel)")
         
         // Create SatochipCommandSet for communication
         showMessage("🔍 DEBUG: Creating SatocardCommandSet...")
@@ -317,13 +373,17 @@ class ViewController: UIViewController, UITextViewDelegate {
         showMessage("✅ DEBUG: SatocardCommandSet created successfully")
         print("🔍 CONSOLE DEBUG: Creating SatocardCommandSet...")
         print("✅ CONSOLE DEBUG: SatocardCommandSet created successfully")
+        print("🔍 ViewController: Creating SatocardCommandSet...")
+        print("🔍 ViewController: ✅ SatocardCommandSet created successfully")
         
         showMessage("Card connected! Identifying card type...")
         print("🔍 CONSOLE DEBUG: Card connected! Starting identification...")
+        print("🔍 ViewController: Card connected! Starting identification...")
         
         // Perform card identification
         showMessage("🔍 DEBUG: Attempting to select applet with .anycard...")
         print("🔍 CONSOLE DEBUG: Attempting to select applet with .anycard...")
+        print("🔍 ViewController: Attempting to select applet with .anycard...")
         do {
             let (response, cardType) = try commandSet.selectApplet(cardType: .anycard)
             showMessage("🔍 DEBUG: selectApplet succeeded")
@@ -337,11 +397,18 @@ class ViewController: UIViewController, UITextViewDelegate {
             print("🔍 CONSOLE DEBUG: Response data length: \(response.data.count) bytes")
             print("🔍 CONSOLE DEBUG: Response data (hex): \(response.data.map { String(format: "%02X", $0) }.joined(separator: " "))")
             print("🔍 CONSOLE DEBUG: Detected card type: \(cardType)")
+            print("🔍 ViewController: ✅ selectApplet succeeded")
+            print("🔍 ViewController: Response status word: 0x\(String(response.sw, radix: 16, uppercase: true))")
+            print("🔍 ViewController: Response data length: \(response.data.count) bytes")
+            print("🔍 ViewController: Response data (hex): \(response.data.map { String(format: "%02X", $0) }.joined(separator: " "))")
+            print("🔍 ViewController: Detected card type: \(cardType)")
             
             switch cardType {
             case .satochip:
                 showMessage("✅ Satochip card detected!")
                 showMessage("Card Type: \(cardType.rawValue)")
+                print("🔍 ViewController: ✅ Satochip card detected!")
+                print("🔍 ViewController: Card Type: \(cardType.rawValue)")
                 
                 if let status = commandSet.cardStatus {
                     showMessage("📊 Card Status:")
@@ -351,8 +418,17 @@ class ViewController: UIViewController, UITextViewDelegate {
                     showMessage("  • Protocol Version: \(status.protocolMajorVersion).\(status.protocolMinorVersion)")
                     showMessage("  • Applet Version: \(status.appletMajorVersion).\(status.appletMinorVersion)")
                     showMessage("  • PIN0 Remaining Tries: \(status.pin0RemainingTries)")
+                    
+                    print("🔍 ViewController: 📊 Card Status:")
+                    print("🔍 ViewController:   • Setup Done: \(status.setupDone ? "✅" : "❌")")
+                    print("🔍 ViewController:   • Is Seeded: \(status.isSeeded ? "✅" : "❌")")
+                    print("🔍 ViewController:   • Needs Secure Channel: \(status.needsSecureChannel ? "✅" : "❌")")
+                    print("🔍 ViewController:   • Protocol Version: \(status.protocolMajorVersion).\(status.protocolMinorVersion)")
+                    print("🔍 ViewController:   • Applet Version: \(status.appletMajorVersion).\(status.appletMinorVersion)")
+                    print("🔍 ViewController:   • PIN0 Remaining Tries: \(status.pin0RemainingTries)")
                 } else {
                     showMessage("⚠️ Card status information not available")
+                    print("🔍 ViewController: ⚠️ Card status information not available")
                 }
                 
                 // Continue with Satochip-specific operations
@@ -391,11 +467,16 @@ class ViewController: UIViewController, UITextViewDelegate {
             print("❌ CONSOLE DEBUG: selectApplet failed with error")
             print("🔍 CONSOLE DEBUG: Error type: \(type(of: error))")
             print("🔍 CONSOLE DEBUG: Error description: \(error.localizedDescription)")
+            print("🔍 ViewController: ❌ selectApplet failed with error")
+            print("🔍 ViewController: Error type: \(type(of: error))")
+            print("🔍 ViewController: Error description: \(error.localizedDescription)")
             // Note: userInfo not available on generic Error type
             if let satocardError = error as? SatocardError {
                 print("🔍 CONSOLE DEBUG: SatocardError case: \(satocardError)")
+                print("🔍 ViewController: SatocardError case: \(satocardError)")
             }
             print("❌ CONSOLE DEBUG: Card identification failed - check card compatibility")
+            print("🔍 ViewController: ❌ Card identification failed - check card compatibility")
         }
     }
     
@@ -405,6 +486,11 @@ class ViewController: UIViewController, UITextViewDelegate {
         showMessage("Starting Satochip operations...")
         showMessage("Message to sign: \(message)")
         showMessage("PIN: \(pin)")
+        print("🔍 ViewController: ===== HANDLING SATOCHIP OPERATIONS =====")
+        print("🔍 ViewController: CommandSet type: \(type(of: commandSet))")
+        print("🔍 ViewController: Starting Satochip operations...")
+        print("🔍 ViewController: Message to sign: \(message)")
+        print("🔍 ViewController: PIN: \(pin)")
         
         // TODO: Implement the next steps:
         // 1. Secure channel establishment
@@ -412,6 +498,7 @@ class ViewController: UIViewController, UITextViewDelegate {
         // 3. Message hashing and signing
         
         showMessage("Satochip operations ready for next implementation phase...")
+        print("🔍 ViewController: Satochip operations ready for next implementation phase...")
     }
     
     private func showMessage(_ message: String) {

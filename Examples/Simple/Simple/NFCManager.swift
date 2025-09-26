@@ -20,23 +20,34 @@ class NFCManager: NSObject {
     
     /// Starts an NFC session to detect and read tags
     func startNFCSession(completion: @escaping (Bool, String?) -> Void) {
+        print("🔍 NFCManager: startNFCSession called")
+        print("🔍 NFCManager: Checking NFC availability...")
+        
         guard isNFCAvailable else {
-            completion(false, "NFC is not available on this device")
+            let errorMsg = "NFC is not available on this device"
+            print("❌ NFCManager: \(errorMsg)")
+            completion(false, errorMsg)
             return
         }
         
+        print("✅ NFCManager: NFC is available")
         completionHandler = completion
         
         nfcSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
         nfcSession?.alertMessage = "Hold your Satochip card near the iPhone to begin communication"
+        
+        print("🔍 NFCManager: Starting NFC session with message: '\(nfcSession?.alertMessage ?? "nil")'")
         nfcSession?.begin()
+        print("🔍 NFCManager: NFC session started successfully")
     }
     
     /// Stops the current NFC session
     func stopNFCSession() {
+        print("🔍 NFCManager: stopNFCSession called")
         nfcSession?.invalidate()
         nfcSession = nil
         completionHandler = nil
+        print("🔍 NFCManager: NFC session stopped and cleaned up")
     }
     
     /// Shows an alert if NFC is not available
@@ -55,43 +66,70 @@ class NFCManager: NSObject {
 
 extension NFCManager: NFCNDEFReaderSessionDelegate {
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        print("🔍 NFCManager: readerSession didInvalidateWithError called")
+        print("🔍 NFCManager: Error type: \(type(of: error))")
+        print("🔍 NFCManager: Error description: \(error.localizedDescription)")
+        
         DispatchQueue.main.async { [weak self] in
             if let nfcError = error as? NFCReaderError {
+                print("🔍 NFCManager: NFCReaderError code: \(nfcError.code.rawValue)")
                 switch nfcError.code {
                 case .readerSessionInvalidationErrorUserCanceled:
-                    self?.completionHandler?(false, "User cancelled NFC session")
+                    let msg = "User cancelled NFC session"
+                    print("🔍 NFCManager: \(msg)")
+                    self?.completionHandler?(false, msg)
                 case .readerSessionInvalidationErrorSessionTimeout:
-                    self?.completionHandler?(false, "NFC session timed out")
+                    let msg = "NFC session timed out"
+                    print("🔍 NFCManager: \(msg)")
+                    self?.completionHandler?(false, msg)
                 case .readerSessionInvalidationErrorSessionTerminatedUnexpectedly:
-                    self?.completionHandler?(false, "NFC session terminated unexpectedly")
+                    let msg = "NFC session terminated unexpectedly"
+                    print("🔍 NFCManager: \(msg)")
+                    self?.completionHandler?(false, msg)
                 default:
-                    self?.completionHandler?(false, "NFC error: \(nfcError.localizedDescription)")
+                    let msg = "NFC error: \(nfcError.localizedDescription)"
+                    print("🔍 NFCManager: \(msg)")
+                    self?.completionHandler?(false, msg)
                 }
             } else {
-                self?.completionHandler?(false, "NFC error: \(error.localizedDescription)")
+                let msg = "NFC error: \(error.localizedDescription)"
+                print("🔍 NFCManager: \(msg)")
+                self?.completionHandler?(false, msg)
             }
             self?.completionHandler = nil
         }
     }
     
     func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
+        print("🔍 NFCManager: readerSession didDetectNDEFs called")
+        print("🔍 NFCManager: Number of NDEF messages: \(messages.count)")
+        
         // This method is called when NDEF messages are detected
         // For Satochip cards, we'll need to handle raw tag communication instead
         DispatchQueue.main.async { [weak self] in
-            self?.completionHandler?(false, "NDEF messages detected, but Satochip cards use raw tag communication")
+            let msg = "NDEF messages detected, but Satochip cards use raw tag communication"
+            print("🔍 NFCManager: \(msg)")
+            self?.completionHandler?(false, msg)
             self?.completionHandler = nil
         }
     }
     
     func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
+        print("🔍 NFCManager: readerSession didDetect tags called")
+        print("🔍 NFCManager: Number of tags detected: \(tags.count)")
+        
         // This method is called when NFC tags are detected
         // For now, we'll just report that a tag was detected
         // Later we'll implement Satochip-specific tag handling
         DispatchQueue.main.async { [weak self] in
             if let tag = tags.first {
-                self?.completionHandler?(true, "NFC tag detected: \(tag)")
+                let msg = "NFC tag detected: \(tag)"
+                print("🔍 NFCManager: \(msg)")
+                self?.completionHandler?(true, msg)
             } else {
-                self?.completionHandler?(false, "No NFC tags detected")
+                let msg = "No NFC tags detected"
+                print("🔍 NFCManager: \(msg)")
+                self?.completionHandler?(false, msg)
             }
             self?.completionHandler = nil
         }

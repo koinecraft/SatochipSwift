@@ -13,7 +13,9 @@ class PINManager {
     
     /// Checks if a valid PIN is currently stored and not expired
     var hasValidPIN: Bool {
-        return currentPIN != nil && pinExpirationTimer?.isValid == true
+        let isValid = currentPIN != nil && pinExpirationTimer?.isValid == true
+        print("🔍 PINManager: hasValidPIN check - currentPIN: \(currentPIN != nil ? "set" : "nil"), timer valid: \(pinExpirationTimer?.isValid ?? false), result: \(isValid)")
+        return isValid
     }
     
     /// Gets the current PIN if valid, nil otherwise
@@ -23,6 +25,7 @@ class PINManager {
     
     /// Prompts user for PIN and stores it with timeout
     func promptForPIN(from viewController: UIViewController, completion: @escaping (String?) -> Void) {
+        print("🔍 PINManager: promptForPIN called")
         let alert = UIAlertController(title: "Enter PIN", message: "Please enter your Satochip PIN (case-sensitive alphanumeric)", preferredStyle: .alert)
         
         alert.addTextField { textField in
@@ -36,56 +39,73 @@ class PINManager {
             guard let textField = alert.textFields?.first,
                   let pin = textField.text,
                   !pin.isEmpty else {
+                print("🔍 PINManager: PIN submission failed - empty or nil PIN")
                 completion(nil)
                 return
             }
             
+            print("🔍 PINManager: PIN submitted successfully, setting PIN")
             self?.setPIN(pin)
             completion(pin)
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            print("🔍 PINManager: PIN entry cancelled by user")
             completion(nil)
         }
         
         alert.addAction(submitAction)
         alert.addAction(cancelAction)
         
+        print("🔍 PINManager: Presenting PIN entry alert")
         viewController.present(alert, animated: true)
     }
     
     /// Sets the PIN and starts the expiration timer
     private func setPIN(_ pin: String) {
+        print("🔍 PINManager: setPIN called with PIN length: \(pin.count)")
         currentPIN = pin
         startExpirationTimer()
+        print("🔍 PINManager: PIN set and expiration timer started")
     }
     
     /// Starts or resets the PIN expiration timer
     func resetPINTimer() {
-        guard currentPIN != nil else { return }
+        print("🔍 PINManager: resetPINTimer called")
+        guard currentPIN != nil else { 
+            print("🔍 PINManager: resetPINTimer - no current PIN, skipping reset")
+            return 
+        }
+        print("🔍 PINManager: resetPINTimer - resetting timer for existing PIN")
         startExpirationTimer()
     }
     
     /// Starts the expiration timer
     private func startExpirationTimer() {
+        print("🔍 PINManager: startExpirationTimer called")
         // Invalidate existing timer
         pinExpirationTimer?.invalidate()
         
         // Create new timer
         pinExpirationTimer = Timer.scheduledTimer(withTimeInterval: pinTimeoutInterval, repeats: false) { [weak self] _ in
+            print("🔍 PINManager: PIN expiration timer fired - clearing PIN")
             self?.clearPIN()
         }
+        print("🔍 PINManager: PIN expiration timer started with \(pinTimeoutInterval) second timeout")
     }
     
     /// Clears the PIN and stops the timer
     private func clearPIN() {
+        print("🔍 PINManager: clearPIN called")
         currentPIN = nil
         pinExpirationTimer?.invalidate()
         pinExpirationTimer = nil
+        print("🔍 PINManager: PIN cleared and timer stopped")
     }
     
     /// Manually clears the PIN (for logout, etc.)
     func clearPINManually() {
+        print("🔍 PINManager: clearPINManually called")
         clearPIN()
     }
     
