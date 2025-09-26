@@ -68,6 +68,9 @@ class ViewController: UIViewController, UITextViewDelegate {
         return label
     }()
 
+    private var satocardController: SatocardController?
+    private var commandSet: SatocardCommandSet?
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,8 +82,199 @@ class ViewController: UIViewController, UITextViewDelegate {
         updatePINStatus()
         startPINStatusTimer()
         os_log("🔍 ViewController: viewDidLoad setup complete", log: ViewController.log, type: .info)
+        setupNFC()
     }
     
+   private func setupNFC() {
+        os_log("🔍 ViewController: setupNFC called", log: ViewController.log, type: .info)
+        guard SatocardController.isAvailable else {
+            print("NFC not available on this device")
+            os_log("🔍 ViewController: NFC not available on this device", log: ViewController.log, type: .info)
+            return
+        }
+        
+        satocardController = SatocardController(
+            alertMessages: SatocardController.defaultAlertMessages,
+            onConnect: { [weak self] cardChannel in
+                self?.handleCardConnection(cardChannel)
+            },
+            onFailure: { [weak self] error in
+                self?.handleCardError(error)
+            }
+        )
+    }
+    
+    // private func handleCardOperations() {
+    //     guard let commandSet = commandSet else { return }
+        
+    //     do {
+    //         try performCardOperation()
+    //     } catch SatocardError.pinRequired {
+    //         print("PIN is required for this operation")
+    //         // Prompt user for PIN
+    //     } catch SatocardError.wrongCardType {
+    //         print("Wrong card type detected")
+    //         // Handle wrong card type
+    //     } catch SatocardError.wrongResponseLength(let length, let expected) {
+    //         print("Response length mismatch: got \(length), expected \(expected)")
+    //     } catch SatocardError.pathTooLongForBip32Derivation(let length, let expected) {
+    //         print("BIP32 path too long: \(length), max allowed: \(expected)")
+    //     } catch CardError.wrongPIN(let retryCounter) {
+    //         print("Wrong PIN entered. Retries remaining: \(retryCounter)")
+    //         // Update UI to show remaining retries
+    //     } catch CardError.pinBlocked {
+    //         print("PIN is blocked. Use PUK to unblock.")
+    //         // Show PUK entry dialog
+    //     } catch SatodimeApiError.wrongSlip44Size(let length, let expected) {
+    //         print("SLIP-44 size error: \(length), expected: \(expected)")
+    //     } catch SeedkeeperApiError.wrongSecretSize(let size) {
+    //         print("Invalid secret size: \(size). Must be 16-64 bytes.")
+    //     } catch MnemonicError.wrongBip39Word(let word) {
+    //         print("Invalid BIP39 word: \(word)")
+    //     } catch MnemonicError.wrongBip39Checksum {
+    //         print("BIP39 checksum validation failed")
+    //     } catch {
+    //         print("Unexpected error: \(error)")
+    //     }
+    // }
+
+    private func signTransaction() {
+        guard let commandSet = commandSet else { return }
+        
+        do {
+            // This would typically be called through the secure channel
+            // The actual implementation depends on the specific transaction format
+            
+            // Example: Sign a message hash
+            let messageHash = "Hello, Satochip!".data(using: .utf8)!.sha256
+            // let signature = try commandSet.cardSignMessage(messageHash: messageHash)
+            print("Message signed successfully")
+            
+        } catch {
+            print("Error signing transaction: \(error)")
+        }
+    }
+
+    private func checkNFCAvailability() -> Bool {
+        guard SatocardController.isAvailable else {
+            showMessage("NFC Not Available - This device does not support NFC or NFC is disabled.")
+            return false
+        }
+        return true
+    }
+
+    private func handleCardConnection(_ cardChannel: CardChannel) {
+        DispatchQueue.main.async {
+            self.commandSet = SatocardCommandSet(cardChannel: cardChannel)
+            self.detectCardType()
+        }
+    }
+    
+    private func handleCardError(_ error: Error) {
+        DispatchQueue.main.async {
+            print("Card error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func startNFCSession() {
+        satocardController?.start(alertMessage: "Hold your Satochip card near the device")
+    }
+
+private func detectCardType() {
+    guard let commandSet = commandSet else { return }
+    
+    do {
+        let (response, cardType) = try commandSet.selectApplet(cardType: .anycard)
+        print("Detected card type: \(cardType)")
+        
+        switch cardType {
+        case .satochip:
+            handleSatochipCard()
+//        case .satodime:
+//            handleSatodimeCard()
+//        case .seedkeeper:
+//            handleSeedkeeperCard()
+        default:
+            print("Unknown card type")
+        }
+    } catch {
+        print("Error detecting card: \(error)")
+    }
+}
+
+private func handleSatochipCard() {
+    guard let commandSet = commandSet else { return }
+    
+    do {
+        // Get card status
+        let statusResponse = try commandSet.cardGetStatus()
+        print("Card status retrieved")
+        
+        // Check if card needs setup
+        if let cardStatus = commandSet.cardStatus, !cardStatus.setupDone {
+            setupSatochipCard()
+        } else {
+            // Card is already set up, proceed with operations
+            authenticateWithCard()
+        }
+    } catch {
+        print("Error handling Satochip card: \(error)")
+    }
+}
+
+private func setupSatochipCard() {
+    guard let commandSet = commandSet else { return }
+    
+    do {
+        let pin = "qqqqqq".bytes
+        let response = try commandSet.cardSetup(pin_tries0: 3, pin0: pin)
+        print("Card setup completed successfully")
+        
+        // Now authenticate with the new PIN
+        authenticateWithCard()
+    } catch {
+        print("Error setting up card: \(error)")
+    }
+}
+
+private func authenticateWithCard() {
+    guard let commandSet = commandSet else { return }
+    
+    do {
+        let pin = "qqqq".bytes
+        let response = try commandSet.cardVerifyPIN(pin: pin)
+        print("PIN verification successful")
+        
+        // Now you can perform secure operations
+        performSecureOperations()
+    } catch CardError.wrongPIN(let retryCounter) {
+        print("Wrong PIN. Retries remaining: \(retryCounter)")
+    } catch CardError.pinBlocked {
+        print("PIN is blocked. Use PUK to unblock.")
+    } catch {
+        print("Authentication error: \(error)")
+    }
+}
+  
+private func performSecureOperations() {
+    guard let commandSet = commandSet else { return }
+    
+    do {
+        // Derive a Bitcoin address (m/44'/0'/0'/0/0)
+        let bitcoinPath = "m/44'/0'/0'/0/0"
+        let (pubkey, chaincode) = try commandSet.cardBip32GetExtendedkey(path: bitcoinPath)
+        print("Bitcoin public key: \(pubkey.bytesToHex)")
+        
+        // Get extended public key
+        let xpub = try commandSet.cardBip32GetXpub(path: bitcoinPath, xtype: 0x0488B21E) // Bitcoin mainnet
+        print("Bitcoin xpub: \(xpub)")
+                
+    } catch SatocardError.pathTooLongForBip32Derivation(let length, let expected) {
+        print("BIP32 path too long: \(length), expected max: \(expected)")
+    } catch {
+        print("Error performing secure operations: \(error)")
+    }
+}
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         os_log("🔍 ViewController: viewWillAppear called", log: ViewController.log, type: .info)
@@ -348,8 +542,8 @@ class ViewController: UIViewController, UITextViewDelegate {
             // If we haven't seen any callbacks by now, there might be an issue
         }
         
-        // Add a timeout after 10 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
+        // Add a timeout after 30 seconds to give users time to position their card
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) {
             self.showMessage("⏰ DEBUG: NFC session timeout - no activity detected")
             print("⏰ CONSOLE DEBUG: NFC session timeout - no activity detected")
             print("⏰ CONSOLE DEBUG: This might indicate NFC is disabled or app lacks permissions")
@@ -568,8 +762,8 @@ class ViewController: UIViewController, UITextViewDelegate {
     }
     
     private func startPINStatusTimer() {
-        // Update PIN status every 10 seconds to show countdown
-        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+        // Update PIN status every 60 seconds to show countdown
+        Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
             self?.updatePINStatus()
         }
     }
