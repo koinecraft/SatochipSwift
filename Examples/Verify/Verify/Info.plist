@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NFCReaderUsageDescription</key>
+	<string>This app uses NFC to communicate with Satochip hardware wallets for secure message signing.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -46,6 +48,7 @@
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+		<string>nfc</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

@@ -4,5 +4,10 @@
 <dict>
 	<key>com.apple.developer.team-identifier</key>
 	<string>$(DEVELOPMENT_TEAM)</string>
+	<key>com.apple.developer.nfc.readersession.formats</key>
+	<array>
+		<string>NDEF</string>
+		<string>TAG</string>
+	</array>
 </dict>
 </plist>
