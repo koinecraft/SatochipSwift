@@ -8,6 +8,9 @@ xcodebuild -scheme Simple -configuration Debug -destination 'platform=iOS,id=000
 
 xcrun devicectl device process launch --device 0EFFEADB-10B0-40D0-99D3-612568107A77 com.gammastream.SimpleSato
 
+xcrun devicectl device process launch --device 0EFFEADB-10B0-40D0-99D3-612568107A77 com.gammastream.SimpleSato && log stream --predicate 'process == "Simple"' --style compact
+
+
 
 pkill -f "log stream"
 

@@ -1,8 +1,6 @@
 import Foundation
 import CryptoSwift
 import SwiftTLS
-//import OSLog
-//import os.log
 
 public enum SatocardError: Error {
     case pinRequired
@@ -87,8 +85,10 @@ public enum CardType: String {
 }
 
 public class SatocardCommandSet {
-    //let //logger = Logger(label: "io.satochip.commandset")
-    //let logger = Logger(subsystem: "io.satochip.lib", category: "SatocardCommandSet")
+    // Using NSLog for iOS 13 compatibility
+    private func logInfo(_ message: String) {
+        NSLog("[SATOCHIPLIB] %@", message)
+    }
     let cardChannel: CardChannel
     let secureChannel: SecureChannel
     let satochipParser: SatocardParser
@@ -160,7 +160,7 @@ public class SatocardCommandSet {
                     }
                     return (rapdu, foundCardType)
                 } catch let error {
-                    print(error.localizedDescription)
+                    SatochipError("Error in selectApplet: \(error.localizedDescription)", category: .commandSet)
                 }
             }
         }
@@ -185,7 +185,7 @@ public class SatocardCommandSet {
     
 
     func cardTransmit(plainApdu: APDUCommand) throws -> APDUResponse {
-        print("in cardTransmit")
+        SatochipDebug("Starting cardTransmit", category: .commandSet)
         // we try to transmit the APDU until we receive the answer or we receive an unrecoverable error
         var isApduTransmitted: Bool = false
         
@@ -195,9 +195,9 @@ public class SatocardCommandSet {
             let ins: UInt8 = apduBytes[1]
             // for debug purpose
             if !SatocardCommandSet.sensitiveInstructionSet.contains(ins){
-                print("SATOCHIPLIB: card transmit data: \(apduBytes.bytesToHex)");
+                SatochipDebug("Card transmit data: \(apduBytes.bytesToHex)", category: .commandSet);
             } else {
-                print("SATOCHIPLIB: card transmit data: \(apduBytes[0..<5].bytesToHex)\(String(repeating: "*", count: (apduBytes.count-5)))");
+                SatochipDebug("Card transmit data: \(apduBytes[0..<5].bytesToHex)\(String(repeating: "*", count: (apduBytes.count-5)))", category: .commandSet);
             }
             
             var isEncrypted: Bool = false
@@ -215,9 +215,9 @@ public class SatocardCommandSet {
                     let (_, _) = try cardInitiateSecureChannel()
                 }
                 // encrypt apdu
-                //logger.info("Capdu plaintext: \(plainApdu.toHexString())");
+                //logInfo("Capdu plaintext: \(plainApdu.toHexString())");
                 capdu = secureChannel.encryptSecureChannel(plainApdu: plainApdu)
-                //logger.info("Capdu encrypted: \(capdu.toHexString())");
+                //logInfo("Capdu encrypted: \(capdu.toHexString())");
                 isEncrypted=true
             } else {
                 // plain adpu
@@ -227,9 +227,9 @@ public class SatocardCommandSet {
             var rapdu: APDUResponse =  try cardChannel.send(capdu)
             if (rapdu.sw==0x9000){
                 if (isEncrypted){
-                    //logger.info("Rapdu encrypted: \(rapdu.toHexString())");
+                    //logInfo("Rapdu encrypted: \(rapdu.toHexString())");
                     rapdu = try secureChannel.decryptSecureChannel(encryptedApdu: rapdu)
-                    //logger.info("Rapdu decrypted: \(rapdu.toHexString())");
+                    //logInfo("Rapdu decrypted: \(rapdu.toHexString())");
                 }
                 isApduTransmitted = true // leave loop
                 return  rapdu
@@ -262,18 +262,18 @@ public class SatocardCommandSet {
     //****************************************
     
     public func cardGetStatus(sendEncrypted: Bool = true) throws -> APDUResponse {
-        //logger.info("in cardGetStatus - info");
+        //logInfo("in cardGetStatus - info");
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.getStatus.rawValue, p1: 0x00, p2: 0x00, data: [])
         
-        //logger.info("SATOCHIPLIB: C-APDU cardGetStatus:  \(capdu.toHexString())");
+        //logInfo("SATOCHIPLIB: C-APDU cardGetStatus:  \(capdu.toHexString())");
         let rapdu: APDUResponse
         if sendEncrypted {
             rapdu = try self.cardTransmit(plainApdu: capdu);
         } else {
             rapdu = try cardChannel.send(capdu)
         }
-        //logger.info("SATOCHIPLIB: R-APDU cardGetStatus: \(rapdu.toHexString())");
+        //logInfo("SATOCHIPLIB: R-APDU cardGetStatus: \(rapdu.toHexString())");
         
         if rapdu.sw == StatusWord.ok.rawValue {
             cardStatus = CardStatus(rapdu: rapdu)
@@ -288,15 +288,15 @@ public class SatocardCommandSet {
         let clientPubkey:[UInt8] = secureChannel.generateClientKeypair()
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.initSecureChannel.rawValue, p1: 0x00, p2: 0x00, data: clientPubkey)
             
-        //logger.info("SATOCHIPLIB: CAPDU cardInitiateSecureChannel:  \(capdu.toHexString())")
+        logInfo("SATOCHIPLIB: CAPDU cardInitiateSecureChannel:  \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardInitiateSecureChannel: \(rapdu.toHexString())")
+        logInfo("SATOCHIPLIB: RAPDU cardInitiateSecureChannel: \(rapdu.toHexString())")
         
         // recover card pubkey and a list of possible authentikeys
         let (cardPubkey, possibleAuthentikeys) = try satochipParser.parseInitiateSecureChannel(rapdu: rapdu)
         // setup secure channel
         secureChannel.initiateSecureChannel(cardPubKey: cardPubkey)
-        //logger.info("SATOCHIPLIB: secure Channel initiated!")
+        logInfo("SATOCHIPLIB: secure Channel initiated!")
         
         return (cardPubkey, possibleAuthentikeys)
     }
@@ -306,20 +306,20 @@ public class SatocardCommandSet {
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportAuthentikey.rawValue, p1: 0x00, p2: 0x00)
         
-        //logger.info("SATOCHIPLIB: CAPDU cardExportAuthentikey: \(capdu.toHexString())")
+        logInfo("SATOCHIPLIB: CAPDU cardExportAuthentikey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardExportAuthentikey: \(rapdu.toHexString())")
+        logInfo("SATOCHIPLIB: RAPDU cardExportAuthentikey: \(rapdu.toHexString())")
         
         // parse and recover pubkey
         let authentikey = try satochipParser.parseBip32GetAuthentikey(rapdu: rapdu)
         let authentikeyHex = authentikey.bytesToHex
-        //logger.info("SATOCHIPLIB: Authentikey from cardExportAuthentikey: \(authentikeyHex)")
+        logInfo("SATOCHIPLIB: Authentikey from cardExportAuthentikey: \(authentikeyHex)")
         
         return (rapdu, authentikey, authentikeyHex)
     }
     
     public func cardGetLabel() throws -> String {
-        print("In cardGetLabel")
+        SatochipDebug("Getting card label", category: .commandSet)
         let cla: UInt8 = CLA.proprietary.rawValue
         let ins: UInt8 = SatocardINS.cardLabel.rawValue
         let p1: UInt8 = 0x00
@@ -380,12 +380,12 @@ public class SatocardCommandSet {
     
     // WARNING: this command can erase all data on card!
     public func cardSendResetCommand() throws -> APDUResponse {
-        print("in cardSendResetCommand START")
+        SatochipWarning("Starting card reset command", category: .commandSet)
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.resetToFactory.rawValue, p1: 0x00, p2: 0x00, data: [])
         
         //let rapdu = try self.cardTransmit(plainApdu: capdu)
         let rapdu = try self.cardChannel.send(capdu)
-        print("in cardSendResetCommand END")
+        SatochipDebug("Card reset command completed", category: .commandSet)
         
         return rapdu
     }
@@ -422,9 +422,9 @@ public class SatocardCommandSet {
         }
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.verifyPin.rawValue, p1: 0x00, p2: 0x00, data: mypin!)
-        //logger.info("SATOCHIPLIB: CAPDU cardVerifyPIN: \(capdu.toHexString())")
+        logInfo("SATOCHIPLIB: CAPDU cardVerifyPIN: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardVerifyPIN: \(rapdu.toHexString())")
+        logInfo("SATOCHIPLIB: RAPDU cardVerifyPIN: \(rapdu.toHexString())")
         
         do {
             try rapdu.checkAuthOK()
@@ -432,14 +432,14 @@ public class SatocardCommandSet {
             self.pin0 = mypin
         } catch CardError.wrongPIN(let retryCounter) {
             self.pin0 = nil
-            //logger.info("SATOCHIPLIB: cardVerifyPIN: wrong pin: retryCounter \(retryCounter)")
+            //logInfo("SATOCHIPLIB: cardVerifyPIN: wrong pin: retryCounter \(retryCounter)")
             throw CardError.wrongPIN(retryCounter: retryCounter)
         } catch CardError.wrongPINLegacy {
             self.pin0 = nil
-            //logger.info("SATOCHIPLIB: cardVerifyPIN: wrong pin (legacy: retryCounter unspecified)")
+            //logInfo("SATOCHIPLIB: cardVerifyPIN: wrong pin (legacy: retryCounter unspecified)")
             throw CardError.wrongPINLegacy
         } catch CardError.pinBlocked {
-            print("SATOCHIPLIB: cardVerifyPIN: pin blocked!")
+            SatochipError("PIN blocked", category: .commandSet)
             self.pin0 = nil
             throw CardError.pinBlocked
         }
@@ -450,9 +450,9 @@ public class SatocardCommandSet {
     public func cardUnblockPIN(puk: [UInt8]) throws -> APDUResponse {
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.unblockPin.rawValue, p1: 0x00, p2: 0x00, data: puk)
-        //logger.info("SATOCHIPLIB: CAPDU cardUnblockPIN: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardUnblockPIN: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardUnblockPIN: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardUnblockPIN: \(rapdu.toHexString())")
         
         try rapdu.checkAuthOK()
         
@@ -467,14 +467,14 @@ public class SatocardCommandSet {
 
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportPkiPubkey.rawValue, p1: 0x00, p2: 0x00)
         
-        //logger.info("SATOCHIPLIB: CAPDU cardExportPkiPubkey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardExportPkiPubkey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardExportPkiPubkey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardExportPkiPubkey: \(rapdu.toHexString())")
         
         // parse and recover pubkey
         let authentikey = try satochipParser.parseBip32GetAuthentikey(rapdu: rapdu)
         let authentikeyHex = authentikey.bytesToHex
-        //logger.info("SATOCHIPLIB: Authentikey from cardExportAuthentikey: \(authentikeyHex)")
+        logInfo("SATOCHIPLIB: Authentikey from cardExportAuthentikey: \(authentikeyHex)")
         
         return (rapdu, authentikey)
     }
@@ -541,9 +541,9 @@ public class SatocardCommandSet {
         let data: [UInt8] =  data1 + data2 + data3 + data4
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.setup.rawValue, p1: 0x00, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU cardSetup: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardSetup: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardSetup: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardSetup: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         self.pin0 = pin0
@@ -561,9 +561,9 @@ public class SatocardCommandSet {
         }
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.setup.rawValue, p1: 0x00, p2: 0x00, data: [])
-        //logger.info("SATOCHIPLIB: CAPDU satodimeCardSetup: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeCardSetup: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeCardSetup: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeCardSetup: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         // satodime cardSetup returns a secret unlockCode that is required to perform sensitive actions on the card (seal, unseal, reset, transfer card)
@@ -597,7 +597,7 @@ public class SatocardCommandSet {
      * - Returns: Response adpu & SeedkeeperSecretObject data
      * */
     public func cardBip32GetExtendedkey(path: String, sid: Int? = nil, optionFlags: UInt8 = UInt8(0x40)) throws -> ([UInt8],[UInt8]) {
-        print("[SatocardCommandSet.cardBip32GetExtendedkey]")
+        SatochipDebug("Getting extended key for path: \(path)", category: .commandSet)
         let (depth, pathBytes) = try satochipParser.parseBip32PathToBytes(bip32path: path)
         guard depth <= 10 else {
             throw SatocardError.pathTooLongForBip32Derivation(length: depth, expected: 10)
@@ -755,7 +755,7 @@ public class SatocardCommandSet {
     
 //    def card_bip32_get_xprv(self, path, xtype, is_mainnet, sid=None):
 //            
-//            logger.info(f"card_bip32_get_xpriv(): path={str(path)}")#debugSatochip
+//            logInfo(f"card_bip32_get_xpriv(): path={str(path)}")#debugSatochip
 //            if (type(path)==str):
 //                (depth, bytepath)= self.parser.bip32path2bytes(path)
 //            
@@ -773,7 +773,7 @@ public class SatocardCommandSet {
 //            xprv = bytes.fromhex(xprv_header) + bytes([depth]) + fingerprint + child_number + childchaincode + bytes([0x00]) + childkey.get_private_key_bytes()
 //            assert(len(xprv)==78)
 //            xprv= EncodeBase58Check(xprv)
-//            logger.info(f"card_bip32_get_xpub(): xprv={str(xprv)}")#debugSatochip
+//            logInfo(f"card_bip32_get_xpub(): xprv={str(xprv)}")#debugSatochip
 //            return xprv
 
     
@@ -794,9 +794,9 @@ public class SatocardCommandSet {
                                              p1: 0x00,
                                              p2: 0x00)
         
-        //logger.info("SATOCHIPLIB: CAPDU satodimeGetStatus: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeGetStatus: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeGetStatus: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeGetStatus: \(rapdu.toHexString())")
         
         self.satodimeStatus = try SatodimeStatus(rapdu: rapdu)
         
@@ -810,9 +810,9 @@ public class SatocardCommandSet {
                                              ins: SatocardINS.getSatodimeKeyslotStatus.rawValue,
                                              p1: keyNbr,
                                              p2: 0x00)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeGetKeyslotStatus: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeGetKeyslotStatus: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeGetKeyslotStatus: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeGetKeyslotStatus: \(rapdu.toHexString())")
         
         // todo: parse response?
         
@@ -861,9 +861,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode + [RFU1, RFU2, keyAsset] + keySlip44 + contractBytes + tokenidBytes
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.setSatodimeKeyslotStatus.rawValue, p1: keyNbr, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeSetKeyslotStatusPart0: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeSetKeyslotStatusPart0: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeSetKeyslotStatusPart0: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeSetKeyslotStatusPart0: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -889,9 +889,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode + keyData
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.setSatodimeKeyslotStatus.rawValue, p1: keyNbr, p2: 0x01, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeSetKeyslotStatusPart1: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeSetKeyslotStatusPart1: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeSetKeyslotStatusPart1: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeSetKeyslotStatusPart1: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -902,9 +902,9 @@ public class SatocardCommandSet {
     public func satodimeGetPubkey(keyNbr: UInt8) throws -> APDUResponse {
     
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.getSatodimePubkey.rawValue, p1: keyNbr, p2: 0x00)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeGetPubkey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeGetPubkey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeGetPubkey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeGetPubkey: \(rapdu.toHexString())")
         
         return rapdu
     }
@@ -922,9 +922,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.getSatodimePrivkey.rawValue, p1: keyNbr, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeGetPrivkey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeGetPrivkey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeGetPrivkey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeGetPrivkey: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -951,9 +951,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode + entropyUser
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.sealSatodimeKey.rawValue, p1: keyNbr, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeSealKey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeSealKey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeSealKey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeSealKey: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -974,9 +974,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.unsealSatodimeKey.rawValue, p1: keyNbr, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeUnsealKey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeUnsealKey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeUnsealKey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeUnsealKey: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -997,9 +997,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.resetSatodimeKey.rawValue, p1: keyNbr, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeResetKey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeResetKey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeResetKey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeResetKey: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -1020,9 +1020,9 @@ public class SatocardCommandSet {
         let data: [UInt8] = unlockCode
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.initiateSatodimeTransfer.rawValue, p1: 0x00, p2: 0x00, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU satodimeInitiateOwnershipTransfer: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU satodimeInitiateOwnershipTransfer: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU satodimeInitiateOwnershipTransfer: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU satodimeInitiateOwnershipTransfer: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         satodimeStatus.incrementUnlockCounter()
@@ -1045,9 +1045,9 @@ public class SatocardCommandSet {
                                              ins: SatocardINS.getSeedkeeperStatus.rawValue,
                                              p1: 0x00,
                                              p2: 0x00)
-        //logger.info("SATOCHIPLIB: CAPDU seedkeeperGetStatus: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU seedkeeperGetStatus: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU seedkeeperGetStatus: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU seedkeeperGetStatus: \(rapdu.toHexString())")
         try rapdu.checkOK()
         let seedkeeperStatus = try SeedkeeperStatus(rapdu: rapdu)
         
@@ -1073,9 +1073,9 @@ public class SatocardCommandSet {
                                              p1: UInt8(seedSize),
                                              p2: exportRights.rawValue,
                                              data: data)
-        //logger.info("SATOCHIPLIB: CAPDU seedkeeperGenerateMasterseed: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU seedkeeperGenerateMasterseed: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU seedkeeperGenerateMasterseed: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU seedkeeperGenerateMasterseed: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         let response: [UInt8] = rapdu.data
@@ -1119,9 +1119,9 @@ public class SatocardCommandSet {
                                              p1: 0x00,
                                              p2: exportRights.rawValue,
                                              data: data)
-        //logger.info("SATOCHIPLIB: CAPDU seedkeeperGenerate2faSecret: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU seedkeeperGenerate2faSecret: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU seedkeeperGenerate2faSecret: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU seedkeeperGenerate2faSecret: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         let response: [UInt8] = rapdu.data
@@ -1186,9 +1186,9 @@ public class SatocardCommandSet {
                                              p1: size,
                                              p2: exportRights.rawValue,
                                              data: data)
-        //logger.info("SATOCHIPLIB: CAPDU seedkeeperGenerateRandomSecret: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU seedkeeperGenerateRandomSecret: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU seedkeeperGenerateRandomSecret: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU seedkeeperGenerateRandomSecret: \(rapdu.toHexString())")
         
         try rapdu.checkOK()
         let response: [UInt8] = rapdu.data
@@ -1719,9 +1719,9 @@ public class SatocardCommandSet {
     public func cardExportPersoPubkey() throws -> APDUResponse {
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportPkiPubkey.rawValue, p1: 0x00, p2: 0x00)
-        //logger.info("SATOCHIPLIB: CAPDU cardExportPersoPubkey: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardExportPersoPubkey: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardExportPersoPubkey: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardExportPersoPubkey: \(rapdu.toHexString())")
         
         return rapdu
     }
@@ -1733,9 +1733,9 @@ public class SatocardCommandSet {
         var p2: UInt8 = 0x01 // init
         
         var capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportPkiCertificate.rawValue, p1: p1, p2: p2)
-        //logger.info("SATOCHIPLIB: CAPDU cardExportPersoCertificate: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardExportPersoCertificate: \(capdu.toHexString())")
         var rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardExportPersoCertificate: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardExportPersoCertificate: \(rapdu.toHexString())")
         
         _ = try rapdu.checkOK()
         var response: [UInt8] = rapdu.data
@@ -1762,9 +1762,9 @@ public class SatocardCommandSet {
             data[3] = UInt8(chunkSize & 0xFF)
             
             capdu = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportPkiCertificate.rawValue, p1: p1, p2: p2, data: data)
-            //logger.info("SATOCHIPLIB: CAPDU cardExportPersoCertificate update: \(capdu.toHexString())")
+            //logInfo("SATOCHIPLIB: CAPDU cardExportPersoCertificate update: \(capdu.toHexString())")
             rapdu = try self.cardTransmit(plainApdu: capdu)
-            //logger.info("SATOCHIPLIB: RAPDU cardExportPersoCertificate update: \(rapdu.toHexString())")
+            //logInfo("SATOCHIPLIB: RAPDU cardExportPersoCertificate update: \(rapdu.toHexString())")
             
             // update certificate
             response = rapdu.data
@@ -1779,9 +1779,9 @@ public class SatocardCommandSet {
         data[2] = UInt8((certRemaining>>8)&0xFF)
         data[3] = UInt8(certRemaining & 0xFF)
         capdu = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.exportPkiCertificate.rawValue, p1: p1, p2: p2, data: data)
-        //logger.info("SATOCHIPLIB: CAPDU cardExportPersoCertificate final: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardExportPersoCertificate final: \(capdu.toHexString())")
         rapdu = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardExportPersoCertificate final: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardExportPersoCertificate final: \(rapdu.toHexString())")
         // update certificate
         response = rapdu.data
         certBytes += Array(response[0 ..< certRemaining])
@@ -1795,15 +1795,15 @@ public class SatocardCommandSet {
     public func cardChallengeResponsePerso(challengeFromHost: [UInt8]) throws -> APDUResponse {
         
         let capdu: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: SatocardINS.challengeResponsePki.rawValue, p1: 0x00, p2: 0x00, data: challengeFromHost)
-        //logger.info("SATOCHIPLIB: CAPDU cardChallengeResponsePerso: \(capdu.toHexString())")
+        //logInfo("SATOCHIPLIB: CAPDU cardChallengeResponsePerso: \(capdu.toHexString())")
         let rapdu: APDUResponse = try self.cardTransmit(plainApdu: capdu)
-        //logger.info("SATOCHIPLIB: RAPDU cardChallengeResponsePerso: \(rapdu.toHexString())")
+        //logInfo("SATOCHIPLIB: RAPDU cardChallengeResponsePerso: \(rapdu.toHexString())")
         
         return rapdu
     }
     
     public func cardVerifyAuthenticity() throws -> (PkiReturnCode, [String:String]) {
-        //logger.info("In cardVerifyAuthenticity")
+        //logInfo("In cardVerifyAuthenticity")
         var errorCode = PkiReturnCode.unknown
         var deviceTxt = ""
         var subcaTxt = ""
@@ -1823,7 +1823,7 @@ public class SatocardCommandSet {
         } catch PkiError.failedToExportPemCertificate {
             return (PkiReturnCode.failedToExportPemCertificate, dic)
         }
-        //logger.info("Device PEM: \(devicePem)")
+        //logInfo("Device PEM: \(devicePem)")
         guard let deviceCertificate = SwiftTLS.X509.Certificate(PEMString: devicePem) else {
             //throw PkiError.failedToParseDevicePemCertificate
             return (PkiReturnCode.failedToParsePemCertificate, dic)

@@ -22,8 +22,8 @@ let package = Package(
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", .upToNextMinor(from:"1.0.0")),
         .package(url: "https://github.com/marmelroy/Zip.git", .upToNextMinor(from:"2.1.0")),
         .package(url: "https://github.com/Electric-Coin-Company/MnemonicSwift.git", .upToNextMajor(from: "2.2.4")),
-        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.0.0")
-        //.package(url: "https://github.com/apple/swift-log.git", from:"1.0.0"),
+        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.0.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from:"1.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -37,6 +37,7 @@ let package = Package(
                 "MnemonicSwift",
                 "BigInt",
                 .product(name: "P256K", package: "swift-secp256k1"),
+                .product(name: "Logging", package: "swift-log"),
             ]),
         .testTarget(
             name: "SatochipSwiftTests",

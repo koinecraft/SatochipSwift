@@ -1,5 +1,6 @@
 import UIKit
 import os.log
+import SatochipSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -8,6 +9,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static let log = OSLog(subsystem: "com.gammastream.SimpleSato", category: "AppDelegate")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Configure SatochipSwift logging for development
+        LoggingConfiguration.configureForDevelopment()
+        
         // Override point for customization after application launch.
         print("🚀 AppDelegate: Application didFinishLaunchingWithOptions called")
         print("🔍 CONSOLE DEBUG: Simple app is starting up")

@@ -1,0 +1,170 @@
+{
+  "" : {
+    "const-values" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master.swiftconstvalues",
+    "dependencies" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master.d",
+    "diagnostics" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master.dia",
+    "emit-module-dependencies" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master-emit-module.dia",
+    "swift-dependencies" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatochipSwift-master.swiftdeps"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/APDUCommand.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUCommand.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUCommand.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUCommand.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/APDUResponse.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUResponse.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUResponse.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/APDUResponse.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Base58.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Base58.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Base58.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Base58.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/BIP32KeyPair.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/BIP32KeyPair.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/BIP32KeyPair.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/BIP32KeyPair.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/CardChannel.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardChannel.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardChannel.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardChannel.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/CardError.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardError.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardError.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardError.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/CardStatus.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardStatus.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardStatus.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CardStatus.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Certificates.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Certificates.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Certificates.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Certificates.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/CoreNFCCardChannel.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CoreNFCCardChannel.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CoreNFCCardChannel.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/CoreNFCCardChannel.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Crypto.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Crypto.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Crypto.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Crypto.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Mnemonic.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Mnemonic.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Mnemonic.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Mnemonic.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/MnemonicEnglish.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicEnglish.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicEnglish.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicEnglish.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/MnemonicOld.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicOld.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicOld.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/MnemonicOld.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/RecoverableSignature.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RecoverableSignature.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RecoverableSignature.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RecoverableSignature.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/RIPEMD160.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RIPEMD160.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RIPEMD160.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/RIPEMD160.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Satocard.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Satocard.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Satocard.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Satocard.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatocardCommandSet.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardCommandSet.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardCommandSet.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardCommandSet.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatocardController.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardController.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardController.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardController.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatocardParser.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardParser.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardParser.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatocardParser.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatodimeKeyslotStatus.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeKeyslotStatus.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeKeyslotStatus.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeKeyslotStatus.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatodimePrivkeyInfo.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimePrivkeyInfo.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimePrivkeyInfo.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimePrivkeyInfo.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SatodimeStatus.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeStatus.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeStatus.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SatodimeStatus.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SecureChannel.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SecureChannel.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SecureChannel.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SecureChannel.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SeedkeeperDerivedSecret.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperDerivedSecret.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperDerivedSecret.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperDerivedSecret.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SeedkeeperLog.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperLog.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperLog.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperLog.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SeedkeeperSecretHeader.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretHeader.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretHeader.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretHeader.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SeedkeeperSecretObject.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretObject.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretObject.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperSecretObject.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/SeedkeeperStatus.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperStatus.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperStatus.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/SeedkeeperStatus.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/StatusWord.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/StatusWord.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/StatusWord.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/StatusWord.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Util.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Util.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Util.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Util.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Version.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Version.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Version.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Version.o"
+  },
+  "/Users/i830671/git/SatochipSwift/Sources/SatochipSwift/Xheaders.swift" : {
+    "index-unit-output-path" : "/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Xheaders.o",
+    "llvm-bc" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Xheaders.bc",
+    "object" : "/Users/i830671/git/SatochipSwift/build/SatochipSwift.build/Release-iphoneos/SatochipSwift.build/Objects-normal/arm64/Xheaders.o"
+  }
+}

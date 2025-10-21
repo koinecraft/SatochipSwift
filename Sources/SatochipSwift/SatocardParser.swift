@@ -27,9 +27,9 @@ public class SatocardParser {
     func parseInitiateSecureChannel(rapdu: APDUResponse) throws -> ([UInt8], [[UInt8]]) {
         
         let data: [UInt8] = rapdu.data
-        //logger.info("SATOCHIPLIB: parseInitiateSecureChannel data: \(data.bytesToHex)")
+//        logger.info("SATOCHIPLIB: parseInitiateSecureChannel data: \(data.bytesToHex)")
         
-        // data= [coordxSize | coordx | sig1Size | sig1 |  sig2Size | sig2]
+//      data = [coordxSize | coordx | sig1Size | sig1 |  sig2Size | sig2]
         var offset: Int = 0
         let coordxSize: Int = 256*Int(data[offset]) + Int(data[offset+1])
         offset+=2

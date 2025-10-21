@@ -1,0 +1,4 @@
+module SatochipSwift {
+header "SatochipSwift-Swift.h"
+export *
+}
